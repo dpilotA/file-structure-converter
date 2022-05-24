@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require("electron");
+const { app, BrowserWindow, ipcMain, dialog } = require("electron");
 const path = require("path");
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -14,8 +14,12 @@ const createWindow = () => {
     height: 600,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
+
+      //devTools: false,
     },
   });
+
+  //mainWindow.setResizable(false);
 
   // and load the index.html of the app.
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
@@ -52,4 +56,13 @@ app.on("activate", () => {
 ipcMain.handle("say-hello", async (event, args) => {
   console.log(args);
   return "Hello from the main process: The app version is: " + app.getVersion();
+});
+
+ipcMain.handle("select-dir", async (event, args) => {
+  console.log(args);
+  var response = await dialog.showOpenDialog({
+    properties: ["openDirectory"],
+  });
+  console.log(response);
+  return response;
 });
