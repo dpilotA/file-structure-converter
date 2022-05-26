@@ -87,3 +87,9 @@ typings/
 
 # Electron-Forge
 out/
+
+# Test Files
+tests/
+
+# Assets (maybe not)
+assets/
