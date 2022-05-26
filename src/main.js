@@ -1,6 +1,6 @@
 const { app, BrowserWindow, ipcMain, dialog } = require("electron");
 const path = require("path");
-const fs = require('fs');
+const fs = require("fs");
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require("electron-squirrel-startup")) {
@@ -28,16 +28,6 @@ const createWindow = () => {
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
 };
-
-console.log(__dirname);
-var p = path.join(__dirname, 'macos_folder_icon.png');
-console.log(p)
-console.log("ajaja")
-fs.copyFile(`./assets/macos_folder_icon.png`, p, (err) => {
-  if (err) throw err;
-  console.log("file was copied");
-});  
-// fs.writeFileSync(p, '# First file to test drag and drop')
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -78,14 +68,13 @@ ipcMain.handle("select-dir", async (event, args) => {
   return response;
 });
 
-
 ipcMain.handle("read-files", async (event, args) => {
   console.log("read-files");
   console.log(args);
-  const {folder} = args;
+  const { folder } = args;
 
-  function pad(num, size){
-    var n = ('0000' + num);
+  function pad(num, size) {
+    var n = "0000" + num;
     return n.substring(n.length - size);
   }
 
@@ -94,11 +83,11 @@ ipcMain.handle("read-files", async (event, args) => {
   fs.readdir(folder, (err, files) => {
     //roztřídit podle orgId
 
-    console.log("readDir")
+    console.log("readDir");
 
     var dF = {};
     var ignored = [];
-    files.forEach(file => {
+    files.forEach((file) => {
       var isValid = file.split("_").length === 3;
       if (isValid) {
         var orgId = pad(file.split("_")[1], 4);
@@ -108,7 +97,7 @@ ipcMain.handle("read-files", async (event, args) => {
         } else {
           dF[orgId].push(file);
         }
-      }else {
+      } else {
         console.log(`${file} - pass`);
         ignored.push(file);
       }
@@ -116,40 +105,44 @@ ipcMain.handle("read-files", async (event, args) => {
     console.log(dF);
     console.log(ignored);
     //překopírovat do nové složky podle roztřízení
-    var dir = tempDir;//'./tests/tmp/Content';
+    var dir = tempDir; //'./tests/tmp/Content';
 
-    if (!fs.existsSync(dir)){
-        fs.mkdirSync(dir, { recursive: true });
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
     }
     Object.keys(dF).forEach((key, i, arr) => {
       var orgDir = `${dir}/${key}`;
 
-      if (!fs.existsSync(orgDir)){
-          fs.mkdirSync(orgDir);
+      if (!fs.existsSync(orgDir)) {
+        fs.mkdirSync(orgDir);
       }
 
-      dF[key].forEach(file => {
+      dF[key].forEach((file) => {
         fs.copyFile(`${folder}/${file}`, `${orgDir}/${file}`, (err) => {
           if (err) throw err;
           console.log(`${file} was copied to ${orgDir}/${file}`);
-        });  
+        });
       });
       //0 / 6-1
-      event.sender.send("progress-update", i / (arr.length-1));
+      event.sender.send("progress-update", i / (arr.length - 1));
     });
 
     console.log("preAppend");
 
     //zapsat ignorovane soubory do textoveho souboru
-    fs.appendFile(`${dir}/ignored_files.txt`, ignored.join("\n"), function (err) {
-      if (err) {
-        // append failed
-      } else {
-        // done
+    fs.appendFile(
+      `${dir}/ignored_files.txt`,
+      ignored.join("\n"),
+      function (err) {
+        if (err) {
+          // append failed
+        } else {
+          // done
+        }
       }
-    });
+    );
 
-    console.log(dir)
+    console.log(dir);
 
     tempDir = dir;
   });
@@ -160,12 +153,17 @@ ipcMain.handle("read-files", async (event, args) => {
   return tempDir;
 });
 
-const iconName = path.join(__dirname, 'macos_folder_icon.png');
+const iconName = path.join(
+  __dirname,
+  process.platform === "darwin"
+    ? "macos_folder_icon.png"
+    : "win10_folder_icon.png"
+);
 
 ipcMain.handle("on-drag-start", (event, dirPath) => {
   console.log(path.resolve(dirPath));
   event.sender.startDrag({
-    file: path.resolve(dirPath),//dirPath,//path.join(__dirname, filePath),
+    file: path.resolve(dirPath), //dirPath,//path.join(__dirname, filePath),
     icon: iconName,
-  })
-})
+  });
+});
