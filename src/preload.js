@@ -9,6 +9,7 @@ contextBridge.exposeInMainWorld("myApp", {
   listenForProgress: (callBack) => ipcRenderer.on('progress-update', (event, args) => {
     callBack(args);
   }),
+  deleteTmpDir: (arg) => ipcRenderer.invoke("delete-tmp", arg),
   isMac: process.platform === "darwin",
   isWindows: process.platform === "win32",
 });

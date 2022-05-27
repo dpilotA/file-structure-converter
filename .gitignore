@@ -92,4 +92,4 @@ out/
 tests/
 
 # Assets (maybe not)
-assets/
+tmp/

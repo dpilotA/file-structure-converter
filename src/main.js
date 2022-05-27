@@ -11,12 +11,14 @@ if (require("electron-squirrel-startup")) {
 const createWindow = () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
+    title: "Storage Converter",
     width: 800,
     height: 600,
+    icon: path.join(__dirname, "icon.png"),
+    resizable: false,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
-
-      //devTools: false,
+      devTools: false,
     },
   });
 
@@ -41,6 +43,7 @@ app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();
   }
+  deleteTmpDir()
 });
 
 app.on("activate", () => {
@@ -78,7 +81,7 @@ ipcMain.handle("read-files", async (event, args) => {
     return n.substring(n.length - size);
   }
 
-  var tempDir = "./tests/tmp/Content";
+  var tempDir = "./tmp/Content";
 
   fs.readdir(folder, (err, files) => {
     //roztřídit podle orgId
@@ -105,16 +108,17 @@ ipcMain.handle("read-files", async (event, args) => {
     console.log(dF);
     console.log(ignored);
     //překopírovat do nové složky podle roztřízení
-    var dir = tempDir; //'./tests/tmp/Content';
+    var dir = tempDir;
 
-    if (!fs.existsSync(dir)) {
+    if (fs.existsSync("./tmp")) {
+      deleteTmpDir();
       fs.mkdirSync(dir, { recursive: true });
     }
     Object.keys(dF).forEach((key, i, arr) => {
-      var orgDir = `${dir}/${key}`;
+      var orgDir = `${dir}/${key}/titles`;
 
       if (!fs.existsSync(orgDir)) {
-        fs.mkdirSync(orgDir);
+        fs.mkdirSync(orgDir, {recursive: true});
       }
 
       dF[key].forEach((file) => {
@@ -162,8 +166,20 @@ const iconName = path.join(
 
 ipcMain.handle("on-drag-start", (event, dirPath) => {
   console.log(path.resolve(dirPath));
+  //if tmp deleted
+  //send error + popup dialog
+  //check if copied file to destination is OK
   event.sender.startDrag({
     file: path.resolve(dirPath), //dirPath,//path.join(__dirname, filePath),
     icon: iconName,
   });
 });
+
+ipcMain.handle("delete-tmp", (event, args) => {
+  deleteTmpDir()
+})
+
+function deleteTmpDir(){
+  //delete tmp directory
+  fs.rmSync("./tmp", { recursive: true, force: true });
+}

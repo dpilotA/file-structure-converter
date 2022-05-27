@@ -56,7 +56,7 @@ html{
   width: 160px;
   height: 160px;
   border-radius: 20px;
-  border: 4px solid rgba(0, 0, 0, 0.50);
+  border: 3px solid rgba(0, 0, 0, 0.50);
   padding: 30px;
 }
 .folder-container img {
@@ -179,4 +179,20 @@ html{
 }
 .button:active {
   opacity: 1;
+}
+
+.button.success:hover {
+  background-color: #ffa500;
+}
+
+.button.success:hover .check-icon {
+  display: none;
+}
+
+.button.success:hover .refresh-icon {
+  display: initial;
+}
+
+.refresh-icon {
+  display: none;
 }

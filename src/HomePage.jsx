@@ -10,30 +10,53 @@ function HomePage() {
   const [folderPicked, setFolderPicked] = useState(false);
   const [progress, setProgress] = useState(0);
   const [btnLoading, setBtnLoading] = useState(false);
-  //errorMsg
-
-  function updateProgress(newProgress) {
-    setProgress(newProgress);
+  //errorMsg -> in React or in main
+  
+  //reset state
+  function resetState() {
+    //state
+    setTempDir("");
+    setProgress(0);
+    setFolderPicked(false);
+    setBtnLoading(false);
+    //temp folder
+    myApp.deleteTmpDir();
   }
-
-  async function clicked() {
+  
+  //pickDir
+  async function readDir() {
     setBtnLoading(true);
 
     const result = await myApp.selectDir();
-    if (result.canceled) {
-      //setErrorMsg();
-      setBtnLoading(false);
-      setFolderPicked(false);
+    if (result.canceled || result.filePaths.length === 0) {
+      resetState();
       return;
     }
     setFolderPicked(true);
-    console.log(updateProgress);
-    const dirResponse = await myApp.readFiles({folder: result.filePaths[0] });
+
+    return result.filePaths[0];
+  }
+  
+  //convert
+  async function convert() {
+    
+    //getFolder
+    const folder = await readDir();
+
+    //restructure files and copy to temp dir
+    const dirResponse = await myApp.readFiles({folder});
     console.log(dirResponse);
     setBtnLoading(false);
     setTempDir(dirResponse);
   }
-
+  
+  //updateProgress
+  function updateProgress(newProgress) {
+    console.log("prog", newProgress);
+    setProgress(newProgress);
+  }
+  
+  //onDrag
   function onDrag(event)  {
     console.log(tempDir);
     event.preventDefault();
@@ -41,17 +64,25 @@ function HomePage() {
     //"/Users/adamsloup/Documents/Code Projects/file-structure-converter/tests/Content"
   }
 
+
+
+
+  function onRepeat() {
+    //reset state
+    resetState();
+    // convert();
+  }
+
   useEffect(() => {
-    myApp.listenForProgress(setProgress);
+    myApp.listenForProgress(updateProgress);
   }, [])
   
-  //ADD RESET, FIX IMAGE, ADD WINDOWS
+  //ADD RESET
 
   return (
     <Container>
-        <ChooseFileBtn loading={btnLoading} onClick={clicked} title={"Upload Folder"} filesPicked={folderPicked}/>
+        <ChooseFileBtn loading={btnLoading} onUpload={convert} onRepeat={onRepeat} title={"Upload Folder"} filesPicked={folderPicked}/>
         <ArrowProgress progress={progress}/>
-        {/* Sipka dolu */}
         <FolderDispenser isMac={myApp.isMac} folderDir={tempDir} onDragStart={onDrag}/>
     </Container>
   )
