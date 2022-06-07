@@ -20,7 +20,7 @@
   "config": {
     "forge": {
       "packagerConfig": {
-        "icon": "src/mac_icon.icns"
+        "icon": "src/assets/mac_icon.icns"
       },
       "makers": [
         {
@@ -53,8 +53,8 @@
               "config": "./webpack.renderer.config.js",
               "entryPoints": [
                 {
-                  "html": "./src/index.html",
-                  "js": "./src/renderer.js",
+                  "html": "./src/frontend/index.html",
+                  "js": "./src/frontend/renderer.js",
                   "name": "main_window"
                 }
               ]

@@ -1,8 +1,8 @@
-import React, {useState, useEffect} from 'react';
-import ArrowProgress from './ArrowProgress.jsx';
-import ChooseFileBtn from "./ChooseFileBtn.jsx";
-import Container from "./Container.jsx";
-import FolderDispenser from "./FolderDispenser.jsx";
+import React, { useState, useEffect } from 'react';
+import ArrowProgress from '../components/ArrowProgress.jsx';
+import ChooseFileBtn from "../components/ChooseFileBtn.jsx";
+import Container from "../components/Container.jsx";
+import FolderDispenser from "../components/FolderDispenser.jsx";
 
 function HomePage() {
 
@@ -11,7 +11,7 @@ function HomePage() {
   const [progress, setProgress] = useState(0);
   const [btnLoading, setBtnLoading] = useState(false);
   //errorMsg -> in React or in main
-  
+
   //reset state
   function resetState() {
     //state
@@ -22,7 +22,7 @@ function HomePage() {
     //temp folder
     myApp.deleteTmpDir();
   }
-  
+
   //pickDir
   async function readDir() {
     setBtnLoading(true);
@@ -36,28 +36,28 @@ function HomePage() {
 
     return result.filePaths[0];
   }
-  
+
   //convert
   async function convert() {
-    
+
     //getFolder
     const folder = await readDir();
 
     //restructure files and copy to temp dir
-    const dirResponse = await myApp.readFiles({folder});
+    const dirResponse = await myApp.readFiles({ folder });
     console.log(dirResponse);
     setBtnLoading(false);
     setTempDir(dirResponse);
   }
-  
+
   //updateProgress
   function updateProgress(newProgress) {
     console.log("prog", newProgress);
     setProgress(newProgress);
   }
-  
+
   //onDrag
-  function onDrag(event)  {
+  function onDrag(event) {
     console.log(tempDir);
     event.preventDefault();
     myApp.startDrag(tempDir)
@@ -76,14 +76,14 @@ function HomePage() {
   useEffect(() => {
     myApp.listenForProgress(updateProgress);
   }, [])
-  
+
   //ADD RESET
 
   return (
     <Container>
-        <ChooseFileBtn loading={btnLoading} onUpload={convert} onRepeat={onRepeat} title={"Upload Folder"} filesPicked={folderPicked}/>
-        <ArrowProgress progress={progress}/>
-        <FolderDispenser isMac={myApp.isMac} folderDir={tempDir} onDragStart={onDrag}/>
+      <ChooseFileBtn loading={btnLoading} onUpload={convert} onRepeat={onRepeat} title={"Upload Folder"} filesPicked={folderPicked} />
+      <ArrowProgress progress={progress} />
+      <FolderDispenser isMac={myApp.isMac} folderDir={tempDir} onDragStart={onDrag} />
     </Container>
   )
 }

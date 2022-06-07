@@ -1,6 +1,6 @@
 import React from 'react'
-import macIcon from "./macos_folder_icon.png"
-import winIcon from "./win10_folder_icon.png"
+import macIcon from "../../assets/macos_folder_icon.png"
+import winIcon from "../../assets/win10_folder_icon.png"
 
 function FolderDispenser({ isMac, folderDir, onDragStart }) {
   return (

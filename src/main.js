@@ -14,7 +14,7 @@ const createWindow = () => {
     title: "Storage Converter",
     width: 800,
     height: 600,
-    icon: path.join(__dirname, "icon.png"),
+    icon: path.join(__dirname, "assets/icon.png"),
     resizable: false,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
@@ -118,7 +118,7 @@ ipcMain.handle("read-files", async (event, args) => {
       var orgDir = `${dir}/${key}/titles`;
 
       if (!fs.existsSync(orgDir)) {
-        fs.mkdirSync(orgDir, {recursive: true});
+        fs.mkdirSync(orgDir, { recursive: true });
       }
 
       dF[key].forEach((file) => {
@@ -134,7 +134,7 @@ ipcMain.handle("read-files", async (event, args) => {
     console.log("preAppend");
 
     //zapsat ignorovane soubory do textoveho souboru
-    fs.appendFile(
+    fs.appendFileSync(
       `${dir}/ignored_files.txt`,
       ignored.join("\n"),
       function (err) {
@@ -160,8 +160,8 @@ ipcMain.handle("read-files", async (event, args) => {
 const iconName = path.join(
   __dirname,
   process.platform === "darwin"
-    ? "macos_folder_icon.png"
-    : "win10_folder_icon.png"
+    ? "assets/macos_folder_icon.png"
+    : "assets/win10_folder_icon.png"
 );
 
 ipcMain.handle("on-drag-start", (event, dirPath) => {
@@ -179,7 +179,7 @@ ipcMain.handle("delete-tmp", (event, args) => {
   deleteTmpDir()
 })
 
-function deleteTmpDir(){
+function deleteTmpDir() {
   //delete tmp directory
   fs.rmSync("./tmp", { recursive: true, force: true });
 }
