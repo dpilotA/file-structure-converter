@@ -84,6 +84,7 @@ ipcMain.handle("read-files", async (event, args) => {
   }
 
   var tempDir = "./tmp/Content";
+  tempDir = path.join(app.getPath("temp"), "Content");
 
   fs.readdir(folder, (err, files) => {
     //roztřídit podle orgId
@@ -112,9 +113,9 @@ ipcMain.handle("read-files", async (event, args) => {
     //překopírovat do nové složky podle roztřízení
     var dir = tempDir;
 
-    if (fs.existsSync("./tmp")) {
+    if (fs.existsSync(`${dir}`)) {
       deleteTmpDir();
-      fs.mkdirSync(dir, { recursive: true });
+      fs.mkdirSync(dir); //, { recursive: true }
     }
     Object.keys(dF).forEach((key, i, arr) => {
       var orgDir = `${dir}/${key}/titles`;
@@ -135,18 +136,10 @@ ipcMain.handle("read-files", async (event, args) => {
 
     console.log("preAppend");
 
+    fs.chmodSync(dir, 0o666);
+
     //zapsat ignorovane soubory do textoveho souboru
-    fs.appendFileSync(
-      `${dir}/ignored_files.txt`,
-      ignored.join("\n"),
-      function (err) {
-        if (err) {
-          // append failed
-        } else {
-          // done
-        }
-      }
-    );
+    fs.appendFileSync(`${dir}/ignored_files.txt`, ignored.join("\n"));
 
     console.log(dir);
 
@@ -183,5 +176,8 @@ ipcMain.handle("delete-tmp", (event, args) => {
 
 function deleteTmpDir() {
   //delete tmp directory
-  fs.rmSync("./tmp", { recursive: true, force: true });
+  fs.rmSync(path.join(app.getPath("temp"), "Content"), {
+    recursive: true,
+    force: true,
+  });
 }
