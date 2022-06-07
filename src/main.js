@@ -12,17 +12,19 @@ const createWindow = () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     title: "Storage Converter",
-    width: 800,
+    width: 400,
     height: 600,
     icon: path.join(__dirname, "assets/icon.png"),
     resizable: false,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
+      autoHideMenuBar: true,
       devTools: false,
     },
   });
 
   //mainWindow.setResizable(false);
+  mainWindow.removeMenu();
 
   // and load the index.html of the app.
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
@@ -43,7 +45,7 @@ app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();
   }
-  deleteTmpDir()
+  deleteTmpDir();
 });
 
 app.on("activate", () => {
@@ -176,8 +178,8 @@ ipcMain.handle("on-drag-start", (event, dirPath) => {
 });
 
 ipcMain.handle("delete-tmp", (event, args) => {
-  deleteTmpDir()
-})
+  deleteTmpDir();
+});
 
 function deleteTmpDir() {
   //delete tmp directory
