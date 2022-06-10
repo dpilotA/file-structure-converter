@@ -1,7 +1,7 @@
 import { faArrowUpFromBracket, faCheck, faCircleNotch, faRefresh } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import React, {useState, useEffect} from 'react'
+import React from 'react'
 
 
 function ChooseFileBtn({title, onUpload, filesPicked, loading, onRepeat}) {
